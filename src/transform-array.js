@@ -22,42 +22,32 @@ function transform(arr) {
     return arr;
   }
 
-  const arrCopy = [];
-  let discardNextFlag = false;
-  let doublePrevFlag = false;
-
+  const arrCopy = [...arr];
   for (let i = 0; i < arr.length; i++) {
-    if (discardNextFlag) {
-      discardNextFlag = false;
-      continue;
-    }
-
-    if (doublePrevFlag) {
-      arrCopy.push(arr[i - 1]);
-      doublePrevFlag = false;
-    }
-
-    if (arr[i] === '--discard-prev') {
-      if (i > 0) {
-        arrCopy.pop();
-      }
+    if (arr[i] === '--discard-prev') { 
+      if ((i > 0) && (arr[i-2] !== '--discard-next')) {
+        arrCopy.splice((i - 1), 1);
+      } 
+      arrCopy.splice(i, 1);
     } else if (arr[i] === '--discard-next') {
       if (i < arr.length - 1) {
-        discardNextFlag = true;
+        arrCopy.splice((i + 1), 1);
       }
+      arrCopy.splice(i, 1);
     } else if (arr[i] === '--double-next') {
       if (i < arr.length - 1) {
-        arrCopy.push(arr[i + 1]);
+        arrCopy.splice((i), 1, arr[i + 1]);
+      } else {
+        arrCopy.splice(i, 1);
       }
     } else if (arr[i] === '--double-prev') {
-      if (i > 0) {
-        doublePrevFlag = true;
+      if (i > 0 && arr[i - 1] !== '--discard-next') {
+        arrCopy.splice(i, 1, arr[i - 1]);
+      } else {
+        arrCopy.splice(i, 1);
       }
-    } else {
-      arrCopy.push(arr[i]);
     }
   }
-
   return arrCopy;
 }
 
